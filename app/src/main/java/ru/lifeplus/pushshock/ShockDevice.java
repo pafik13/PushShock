@@ -21,9 +21,9 @@ public final class ShockDevice {
     public final String TAG = "ShockDevice";
     //public static final UUID SHOCK_DEVICE_UUID = "ru.myapp.shockdevice.SHOCK_DEVICE_UUID";
 
-    public static final String PUSH_SERVICE_ADDRESS        = "0000fff0-0000-1000-8000-00805f9b34fb";
+    public static final String PUSH_SERVICE_ADDRESS        = "c935dd50-80e7-11e6-bdf4-0800200c9a66";
     public static final UUID PUSH_SERVICE 		           = UUID.fromString(PUSH_SERVICE_ADDRESS);
-    public static final String PUSH_CHARACTERISTIC_ADDRESS = "0000fff5-0000-1000-8000-00805f9b34fb";
+    public static final String PUSH_CHARACTERISTIC_ADDRESS = "c935dd53-80e7-11e6-bdf4-0800200c9a66";
     public static final UUID PUSH_CHARACTERISTIC           = UUID.fromString(PUSH_CHARACTERISTIC_ADDRESS);
     public static final String SETTINGS_ADDRESS 		   = "0000fff2-0000-1000-8000-00805f9b34fb";
     public static final UUID SETTINGS 			    	   = UUID.fromString(SETTINGS_ADDRESS);
