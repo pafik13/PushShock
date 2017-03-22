@@ -6,10 +6,12 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.content.Context;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +27,8 @@ public final class ShockDevice {
     public static final UUID PUSH_SERVICE 		           = UUID.fromString(PUSH_SERVICE_ADDRESS);
     public static final String PUSH_CHARACTERISTIC_ADDRESS = "c935dd53-80e7-11e6-bdf4-0800200c9a66";
     public static final UUID PUSH_CHARACTERISTIC           = UUID.fromString(PUSH_CHARACTERISTIC_ADDRESS);
+    public static final String NOTIF_CHARACTERISTIC_ADDRESS = "c935dd52-80e7-11e6-bdf4-0800200c9a66";
+    public static final UUID NOTIF_CHARACTERISTIC           = UUID.fromString(NOTIF_CHARACTERISTIC_ADDRESS);
     public static final String SETTINGS_ADDRESS 		   = "0000fff2-0000-1000-8000-00805f9b34fb";
     public static final UUID SETTINGS 			    	   = UUID.fromString(SETTINGS_ADDRESS);
 
@@ -43,6 +47,18 @@ public final class ShockDevice {
     public void addDeviceStateListener(DeviceStateListener listener) {
         WeakReference<DeviceStateListener> newItem = new WeakReference(listener);
         mDeviceStateListeners.add(newItem);
+    }
+
+    public interface DoorStateListener {
+        void onDoorOpened();
+        void onDoorClosed();
+    }
+    List<WeakReference<DoorStateListener>> mDoorStateListeners = new ArrayList<>();
+
+    //TODO: do something with warning
+    public void addDoorStateListener(DoorStateListener listener) {
+        WeakReference<DoorStateListener> newItem = new WeakReference(listener);
+        mDoorStateListeners.add(newItem);
     }
 
     Context mContext;
@@ -70,6 +86,28 @@ public final class ShockDevice {
     public void createCallBack() {
         mBluetoothGattCallback = new BluetoothGattCallback() {
             public final String TAG = "BluetoothGattCallback";
+
+            @Override
+            // Characteristic notification
+            public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+                Log.i("Characteristic", Arrays.toString(characteristic.getValue()));
+
+
+                byte val = characteristic.getValue()[0];
+
+                for(WeakReference<DoorStateListener> ref : mDoorStateListeners) {
+                    DoorStateListener listener = ref.get();
+                    if(listener != null) {
+                        if (val == 0x01) {
+                            listener.onDoorOpened();
+                        } else {
+                            listener.onDoorClosed();
+                        }
+                    } else {
+                        mDeviceStateListeners.remove(ref);
+                    }
+                }
+            }
 
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -196,14 +234,25 @@ public final class ShockDevice {
 
     public boolean shock(){
         if (mDeviceState == DeviceState.SERVICES_DISCOVERED || mDeviceState == DeviceState.READY){
-            setDeviceState(DeviceState.BUSY);
-            byte[] value = {1};
-            if (mGattPushService == null) {
-                mGattPushService = mBluetoothGatt.getService(PUSH_SERVICE);
-            }
-            BluetoothGattCharacteristic characteristic = mGattPushService.getCharacteristic(PUSH_CHARACTERISTIC);
-            characteristic.setValue(value);
-            mBluetoothGatt.writeCharacteristic(characteristic);
+//            setDeviceState(DeviceState.BUSY);
+//            byte[] value = {1};
+//            if (mGattPushService == null) {
+//                mGattPushService = mBluetoothGatt.getService(PUSH_SERVICE);
+//            }
+//            BluetoothGattCharacteristic characteristic = mGattPushService.getCharacteristic(PUSH_CHARACTERISTIC);
+//            characteristic.setValue(value);
+//            mBluetoothGatt.writeCharacteristic(characteristic);
+
+//            private BluetoothGatt mBluetoothGatt;
+//            BluetoothGattCharacteristic characteristic;
+//            boolean enabled;
+//            ...
+            BluetoothGattCharacteristic characteristic = mGattPushService.getCharacteristic(NOTIF_CHARACTERISTIC);
+            mBluetoothGatt.setCharacteristicNotification(characteristic, true);
+//            ...
+            BluetoothGattDescriptor descriptor = characteristic.getDescriptors().get(0); //characteristic.getDescriptor(NOTIF_CHARACTERISTIC);
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mBluetoothGatt.writeDescriptor(descriptor);
             return true;
         }
         return false;

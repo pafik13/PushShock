@@ -145,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements DeviceListFragmen
             if (fragment instanceof ShockDevice.DeviceStateListener) {
                 mShockDevice.addDeviceStateListener((ShockDevice.DeviceStateListener) fragment);
             }
+            if (fragment instanceof ShockDevice.DoorStateListener) {
+                mShockDevice.addDoorStateListener((ShockDevice.DoorStateListener) fragment);
+            }
         }
     }
 

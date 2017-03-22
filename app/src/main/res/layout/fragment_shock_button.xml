@@ -33,9 +33,30 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PUSH"
+        android:text="ПОДКЛЮЧИТЬСЯ"
         android:id="@+id/button_shock"
         android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <CheckedTextView
+        android:text="CheckedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/door_state"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/door_state_title"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="@android:style/TextAppearance.Material.Large"
+        />
+
+    <TextView
+        android:text="Состояние двери"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="43dp"
+        android:id="@+id/door_state_title"
+        android:textAppearance="@android:style/TextAppearance.Material.Large"
+        android:layout_below="@+id/button_shock"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

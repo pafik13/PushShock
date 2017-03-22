@@ -50,7 +50,7 @@ public class DeviceListFragment extends ListFragment implements OnItemClickListe
     private Handler mHandler;
 
     // Stops scanning after 10 seconds.
-    private static final long SCAN_PERIOD = 10000 / 2;
+    private static final long SCAN_PERIOD = 10000 / 5;
     /**
      * The @Constant for result activity
      */
@@ -205,7 +205,8 @@ public class DeviceListFragment extends ListFragment implements OnItemClickListe
             ScanSettings scanSettings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                     .build();
-            mBluetoothAdapter.getBluetoothLeScanner().startScan(filters, scanSettings, mScanCallback);
+            //mBluetoothAdapter.getBluetoothLeScanner().startScan(filters, scanSettings, mScanCallback);
+            mBluetoothAdapter.getBluetoothLeScanner().startScan(mScanCallback);
         } else {
             //mScanning = false;
             mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);

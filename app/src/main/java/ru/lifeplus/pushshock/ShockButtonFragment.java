@@ -1,19 +1,21 @@
 package ru.lifeplus.pushshock;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 /**
  * Created by pavel on 20.05.2016.
  */
-public class ShockButtonFragment extends Fragment implements MainActivity.OnMainActivityInteractionListener, ShockDevice.DeviceStateListener {
-
+public class ShockButtonFragment extends Fragment implements MainActivity.OnMainActivityInteractionListener, ShockDevice.DeviceStateListener, ShockDevice.DoorStateListener {
+    ShockButtonFragment Me;
     /**
      * The {@link ShockDevice}
      */
@@ -25,6 +27,7 @@ public class ShockButtonFragment extends Fragment implements MainActivity.OnMain
     private View mRootView;
 
     public ShockButtonFragment () {
+        Me = this;
     }
 
     @Override
@@ -67,6 +70,7 @@ public class ShockButtonFragment extends Fragment implements MainActivity.OnMain
             @Override
             public void run() {
                 showDeviceInfo();
+                mShockDevice.addDoorStateListener(Me);
             }
         });
     }
@@ -123,6 +127,34 @@ public class ShockButtonFragment extends Fragment implements MainActivity.OnMain
                 if (mRootView != null) {
                     mRootView.findViewById(R.id.device_info).setEnabled(false);
                     mRootView.findViewById(R.id.button_shock).setEnabled(false);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onDoorOpened() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mRootView != null) {
+                    CheckedTextView doorState = (CheckedTextView)mRootView.findViewById(R.id.door_state);
+                    doorState.setText("ОТКРЫТА");
+                    mRootView.setBackgroundColor(Color.GREEN);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onDoorClosed() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mRootView != null) {
+                    CheckedTextView doorState = (CheckedTextView)mRootView.findViewById(R.id.door_state);
+                    doorState.setText("ЗАКРЫТА");
+                    mRootView.setBackgroundColor(Color.RED);
                 }
             }
         });
